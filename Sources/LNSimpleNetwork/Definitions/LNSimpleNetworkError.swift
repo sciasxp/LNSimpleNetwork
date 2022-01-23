@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum LNSimpleNetworkError: Error {
+public enum LNSimpleNetworkError: Error {
     case badResponse(Int)
     case jsonDecoder(String)
     case unknown, noInternet, badCredentials, badRequest
