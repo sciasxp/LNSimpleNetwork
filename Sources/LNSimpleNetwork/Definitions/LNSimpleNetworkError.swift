@@ -8,7 +8,7 @@
 import Foundation
 
 public enum LNSimpleNetworkError: Error {
-    case badResponse(Int)
+    case badResponse(Int, Data? = nil)
     case jsonDecoder(String)
     case unknown, noInternet, badCredentials, badRequest
 }

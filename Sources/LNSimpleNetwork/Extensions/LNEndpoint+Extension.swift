@@ -23,8 +23,9 @@ extension LNEndpoint {
 
         var request = URLRequest(url: url)
         request.httpBody = body
-        request.timeoutInterval = 60
+        request.timeoutInterval = 10
         request.cachePolicy = .useProtocolCachePolicy
+        request.httpMethod = httpMethod.rawValue
         
         if let token = token {
             request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
