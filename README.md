@@ -1,5 +1,6 @@
 # LNSimpleNetwork 🪛
 
+[![Version](https://img.shields.io/github/v/release/sciasxp/LNSimpleNetwork?include_prereleases)](https://github.com/sciasxp/LNSimpleNetwork/releases/tag/v0.1.0)
 
 
 A simple tool to organize yours rest apis connection and use then.

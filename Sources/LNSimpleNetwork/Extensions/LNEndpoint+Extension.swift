@@ -6,7 +6,7 @@
 
 import Foundation
 
-extension LNEndpoint {
+public extension LNEndpoint {
     
     var urlComponent: URLComponents? {
         var urlComponent = URLComponents(string: baseURL)

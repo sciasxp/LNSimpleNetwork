@@ -9,7 +9,7 @@ import Foundation
 import Combine
 
 @available(macOS 10.15, iOS 13.0, *)
-extension LNAPIClient {
+public extension LNAPIClient {
     var session: URLSession {
         return URLSession(configuration: .default, delegate: nil, delegateQueue: nil)
     }
@@ -48,7 +48,7 @@ extension LNAPIClient {
 }
 
 @available(macOS 12, iOS 15, *)
-extension LNAPIClient {
+public extension LNAPIClient {
     
     func connect<T: Decodable>(with endpoint: LNEndpoint) async throws -> T {
         guard var request = endpoint.request else {
