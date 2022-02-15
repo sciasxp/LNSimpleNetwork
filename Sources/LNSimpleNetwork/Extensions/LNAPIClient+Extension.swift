@@ -8,6 +8,45 @@
 import Foundation
 import Combine
 
+@available(macOS 10.15, iOS 13.0, *)
+extension LNAPIClient {
+    var session: URLSession {
+        return URLSession(configuration: .default, delegate: nil, delegateQueue: nil)
+    }
+    
+    var decoder: JSONDecoder {
+        JSONDecoder()
+    }
+    
+    func connection<T: Decodable>(with endpoint: LNEndpoint) -> AnyPublisher<T, Error> {
+        guard let request = endpoint.request else {
+            return Fail(error: LNSimpleNetworkError.badRequest).eraseToAnyPublisher()
+        }
+        
+        return session.dataTaskPublisher(for: request)
+            .receive(on: DispatchQueue.main)
+            .tryMap(handleOutput)
+            .decode(type: T.self, decoder: decoder)
+            .eraseToAnyPublisher()
+    }
+    
+    private func handleOutput(output: URLSession.DataTaskPublisher.Output) throws -> Data {
+        guard let response = output.response as? HTTPURLResponse else { throw URLError(.badServerResponse) }
+        
+        guard 200..<300 ~= response.statusCode else {
+            throw LNSimpleNetworkError.badResponse(response.statusCode, output.data)
+        }
+        
+        return output.data
+    }
+    
+    func cancelAllTasks() {
+        session.getAllTasks { (tasks) in
+            tasks.forEach { $0.cancel() }
+        }
+    }
+}
+
 @available(macOS 12, iOS 15, *)
 extension LNAPIClient {
     
@@ -43,40 +82,5 @@ extension LNAPIClient {
         }
         
         return data
-    }
-}
-
-@available(macOS 10.15, iOS 13.0, *)
-extension LNAPIClient {
-    var session: URLSession {
-        return URLSession(configuration: .default, delegate: self, delegateQueue: nil)
-    }
-    
-    func connection<T: Decodable>(with endpoint: LNEndpoint) -> AnyPublisher<T, Error> {
-        guard let request = endpoint.request else {
-            return Fail(error: LNSimpleNetworkError.badRequest).eraseToAnyPublisher()
-        }
-        
-        return session.dataTaskPublisher(for: request)
-            .receive(on: DispatchQueue.main)
-            .tryMap(handleOutput)
-            .decode(type: T.self, decoder: decoder)
-            .eraseToAnyPublisher()
-    }
-    
-    private func handleOutput(output: URLSession.DataTaskPublisher.Output) throws -> Data {
-        guard let response = output.response as? HTTPURLResponse else { throw URLError(.badServerResponse) }
-        
-        guard 200..<300 ~= response.statusCode else {
-            throw LNSimpleNetworkError.badResponse(response.statusCode, output.data)
-        }
-        
-        return output.data
-    }
-    
-    func cancelAllTasks() {
-        session.getAllTasks { (tasks) in
-            tasks.forEach { $0.cancel() }
-        }
     }
 }

@@ -1,4 +1,5 @@
-/*import XCTest
+
+import XCTest
 import Combine
 @testable import LNSimpleNetwork
 
@@ -69,8 +70,6 @@ final class LNSimpleNetworkTests: XCTestCase {
     }
 }
 
-
-
 // MARK: - Models
 
 struct Employee: Decodable {
@@ -85,7 +84,7 @@ struct Token: Decodable {
 
 // MARK: - Client
 
-class Client: NSObject, LNAPIClient {
+struct Client: LNAPIClient {
     private (set) var decoder: JSONDecoder = {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
@@ -126,7 +125,16 @@ enum Endpoint: LNEndpoint {
                 "password" : password
             ]
             
-            return parameters.json()
+            guard JSONSerialization.isValidJSONObject(parameters) else { return nil }
+            
+            do {
+                let postData = try JSONSerialization.data(withJSONObject: parameters, options: [])
+                return postData
+                
+            } catch(let error) {
+                debugPrint(error.localizedDescription)
+                return nil
+            }
         }
     }
     var token: String? {
@@ -162,4 +170,3 @@ extension Dictionary {
         }
     }
 }
-*/
