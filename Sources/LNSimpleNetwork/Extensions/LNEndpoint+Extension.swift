@@ -34,4 +34,9 @@ public extension LNEndpoint {
         
         return request
     }
+    
+    var body: Data? { nil }
+    var token: String? { nil }
+    var httpMethod: LNHTTPMethod { .get }
+    var urlParameters: [URLQueryItem] { [] }
 }

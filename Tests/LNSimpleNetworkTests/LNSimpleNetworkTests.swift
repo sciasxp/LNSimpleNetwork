@@ -114,7 +114,7 @@ enum Endpoint: LNEndpoint {
         case .login(_, _): return .post
         }
     }
-    var urlParameters: [URLQueryItem] { [] }
+    
     var body: Data? {
         switch self {
         case .test: return nil
