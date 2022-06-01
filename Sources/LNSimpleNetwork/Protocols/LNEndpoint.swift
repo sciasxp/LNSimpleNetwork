@@ -9,6 +9,7 @@ import Foundation
 
 public protocol LNEndpoint {
     
+    var request: URLRequest? { get }
     var baseURL: String { get }
     var path: String { get }
     var httpMethod: LNHTTPMethod { get }
