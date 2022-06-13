@@ -31,7 +31,7 @@ public extension LNAPIClient {
     }
     
     private func handleOutput(output: URLSession.DataTaskPublisher.Output) throws -> Data {
-        guard let response = output.response as? HTTPURLResponse else { throw URLError(.badServerResponse) }
+        guard let response = output.response as? HTTPURLResponse else { throw LNSimpleNetworkError.unknown }
         
         guard 200..<300 ~= response.statusCode else {
             throw LNSimpleNetworkError.badResponse(response.statusCode, output.data)
@@ -59,23 +59,35 @@ public extension LNAPIClient {
             request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         }
         
-        let (data, response) = try await session.data(for: request, delegate: nil)
-        guard let response = response as? HTTPURLResponse else {
-            throw LNSimpleNetworkError.badResponse(0)
-        }
-        
-        let sanitizedData = try handleResponse(data: data, response: response)
-        
         do {
-            return try decoder.decode(T.self, from: sanitizedData)
+            let (data, response) = try await session.data(for: request, delegate: nil)
+            
+            guard let response = response as? HTTPURLResponse else {
+                throw LNSimpleNetworkError.badResponse(0)
+            }
+            
+            do {
+                let sanitizedData = try handleResponse(data: data, response: response)
+                
+                do {
+                    return try decoder.decode(T.self, from: sanitizedData)
+                } catch {
+                    let responseString = String(decoding: data, as: UTF8.self)
+                    throw LNSimpleNetworkError.jsonDecoder(responseString)
+                }
+            } catch {
+                throw error
+            }
+            
+            
+            
         } catch {
-            let responseString = String(decoding: data, as: UTF8.self)
-            throw LNSimpleNetworkError.jsonDecoder(responseString)
+            throw error
         }
     }
     
     private func handleResponse(data: Data?, response: HTTPURLResponse?) throws -> Data {
-        guard let response = response, let data = data else { throw URLError(.badServerResponse) }
+        guard let response = response, let data = data else { throw LNSimpleNetworkError.unknown }
         
         guard 200..<300 ~= response.statusCode else {
             throw LNSimpleNetworkError.badResponse(response.statusCode, data)
