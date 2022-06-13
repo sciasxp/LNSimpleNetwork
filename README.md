@@ -359,6 +359,36 @@ func test() async throws {
 }
 ```
 
+## Extras
+
+Included extension to Dictionary to better handle JSON transformations.
+
+This extensions can be used with body from your requests.
+
+```swift
+let body: [String: Any] = [
+    "src": src,
+    "page": page,
+    "status": "ALL",
+    "sortby": "latest"
+]
+
+let data = body.json()
+```
+
+It's also possible to get a json string version from you dictionary.
+
+```swift
+let body: [String: Any] = [
+    "src": src,
+    "page": page,
+    "status": "ALL",
+    "sortby": "latest"
+]
+
+let string = body.jsonString()
+```
+
 ## Future Work
 
 1. Support to download files.

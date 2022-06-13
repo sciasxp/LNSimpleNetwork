@@ -31,4 +31,4 @@ let package = Package(
     ]
 )
 
-let version = Version("0.1.1")
+let version = Version("0.2.0")
